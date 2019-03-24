@@ -50,7 +50,14 @@ function App({ db, speak }) {
 
   if (questions.length === 0) {
     return (
-      <div>Good job!</div>
+      <div>
+        <div>Good job!</div>
+        <div>
+          <button type="button" onClick={() => setQuestions(shuffle([...items.keys()]))}>
+            Play again
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -81,7 +88,9 @@ function App({ db, speak }) {
       <div>score is {score}.</div>
       <img alt="question" width={200} height={200} src={item.image} onClick={() => speak(item.word)} />
       {answers.map(a => items[a]).map(option => (
-        <li key={option.word} onClick={() => handleClick(option)}>{option.word}</li>
+        <li key={option.word} onClick={() => handleClick(option)}>
+          <button type="button">{option.word}</button>
+        </li>
       ))}
       <div className={cx(fullScreen, { [hidden]: result !== 'right'})}>
         <div className={bigText}>Well done!</div>
