@@ -2,6 +2,19 @@ import React, { useState, useEffect } from 'react';
 import shuffle from 'lodash.shuffle';
 import { css, cx } from 'emotion';
 
+const main = css`
+  position: relative;
+  max-width: 400px;
+  min-height: 100vh;
+  margin: auto;
+  touch-action: manipulation;
+`;
+
+const bigImage = css`
+  width: 100%;
+  padding: 0 1rem;
+`;
+
 const fullScreen = css`
   position: absolute;
   top: 0;
@@ -11,16 +24,24 @@ const fullScreen = css`
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content:center;
 `;
 
 const bigText = css`
   color: white;
-  font-size: 5rem;
+  font-size: 3rem;
 `;
 
 const hidden = css`
   display: none;
+`;
+
+const controller = css`
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  font-size: 3rem;
 `;
 
 function App({ db, speak }) {
@@ -84,14 +105,16 @@ function App({ db, speak }) {
   };
 
   return (
-    <div>
+    <div className={main}>
       <div>score is {score}.</div>
-      <img alt="question" width={200} height={200} src={item.image} onClick={() => speak(item.word)} />
-      {answers.map(a => items[a]).map(option => (
-        <li key={option.word} onClick={() => handleClick(option)}>
-          <button type="button">{option.word}</button>
-        </li>
-      ))}
+      <img className={bigImage} alt="question" src={item.image} onClick={() => speak(item.word)} />
+      <ul className={controller}>
+        {answers.map(a => items[a]).map(option => (
+          <li key={option.word} onClick={() => handleClick(option)}>
+            <button type="button">{option.word}</button>
+          </li>
+        ))}
+      </ul>
       <div className={cx(fullScreen, { [hidden]: result !== 'right'})}>
         <div className={bigText}>Well done!</div>
       </div>

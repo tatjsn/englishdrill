@@ -16,7 +16,8 @@ const db = firebase.firestore();
 
 const speak = voiceId => msg => new Promise((resolve) => {
   const m = new SpeechSynthesisUtterance();
-  m.voice = window.speechSynthesis.getVoices()[voiceId];
+  m.lang = 'en-GB';
+  m.rate = 1.0;
   m.text = msg;
   m.onend = resolve;
   window.speechSynthesis.speak(m);
