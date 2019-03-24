@@ -9,11 +9,16 @@ const main = css`
   margin: auto;
   touch-action: manipulation;
   font-size: 3rem;
+  padding: 1rem;
+`;
+
+const title = css`
+  margin-bottom: 1rem;
+  font-weight: bold;
 `;
 
 const bigImage = css`
   width: 100%;
-  padding: 0 1rem;
 `;
 
 const fullScreen = css`
@@ -27,6 +32,7 @@ const fullScreen = css`
   align-items: center;
   justify-content:center;
   color: white;
+  padding: 1rem;
 `;
 
 const hidden = css`
@@ -38,6 +44,7 @@ const overlay = css`
   width: 100%;
   top: 0;
   left: 0;
+  padding: 1rem;
 `;
 
 const controller = css`
@@ -45,10 +52,11 @@ const controller = css`
   width: 100%;
   bottom: 0;
   left: 0;
+  padding: 1rem;
 `;
 
 function App({ db, speak }) {
-  const [score, setScore] = useState(-1);
+  const [score, setScore] = useState(0);
   const [items, setItems] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [result, setResult] = useState('none');
@@ -60,25 +68,29 @@ function App({ db, speak }) {
       .doc('hnfRsBB7ALdfyEgdj7wK');
     return ref.onSnapshot((doc) => {
       const data = doc.data();
-      setScore(data.score);
       setItems(data.items);
-      setQuestions(shuffle([...data.items.keys()]));
     });
   }, []); // Do not rerun
 
-  if (score === -1 || items.length === 0) {
+  if (items.length === 0) {
     return (
       <div className={main}>Now loading...</div>
     );
   }
 
   if (questions.length === 0) {
+    function setupGame() {
+      setQuestions(shuffle([...items.keys()]));
+    }
+
     return (
       <div className={main}>
-        <div>Good job!</div>
+        <div className={title}>
+          {score === 0 ? 'English drill!' : 'Good job!'}
+        </div>
         <div>
-          <button type="button" onClick={() => setQuestions(shuffle([...items.keys()]))}>
-            Play again
+          <button type="button" onClick={setupGame}>
+            {score === 0 ? 'Start game' : 'Play again'}
           </button>
         </div>
       </div>
