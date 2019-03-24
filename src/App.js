@@ -8,6 +8,7 @@ const main = css`
   min-height: 100vh;
   margin: auto;
   touch-action: manipulation;
+  font-size: 3rem;
 `;
 
 const bigImage = css`
@@ -25,15 +26,18 @@ const fullScreen = css`
   display: flex;
   align-items: center;
   justify-content:center;
-`;
-
-const bigText = css`
   color: white;
-  font-size: 3rem;
 `;
 
 const hidden = css`
   display: none;
+`;
+
+const overlay = css`
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
 `;
 
 const controller = css`
@@ -41,7 +45,6 @@ const controller = css`
   width: 100%;
   bottom: 0;
   left: 0;
-  font-size: 3rem;
 `;
 
 function App({ db, speak }) {
@@ -65,13 +68,13 @@ function App({ db, speak }) {
 
   if (score === -1 || items.length === 0) {
     return (
-      <div>Now loading...</div>
+      <div className={main}>Now loading...</div>
     );
   }
 
   if (questions.length === 0) {
     return (
-      <div>
+      <div className={main}>
         <div>Good job!</div>
         <div>
           <button type="button" onClick={() => setQuestions(shuffle([...items.keys()]))}>
@@ -106,7 +109,7 @@ function App({ db, speak }) {
 
   return (
     <div className={main}>
-      <div>score is {score}.</div>
+      <div className={overlay}>score: {score}</div>
       <img className={bigImage} alt="question" src={item.image} onClick={() => speak(item.word)} />
       <ul className={controller}>
         {answers.map(a => items[a]).map(option => (
@@ -116,10 +119,10 @@ function App({ db, speak }) {
         ))}
       </ul>
       <div className={cx(fullScreen, { [hidden]: result !== 'right'})}>
-        <div className={bigText}>Well done!</div>
+        <div>Well done!</div>
       </div>
       <div className={cx(fullScreen, { [hidden]: result !== 'wrong'})}>
-        <div className={bigText}>Try again...</div>
+        <div>Try again...</div>
       </div>
     </div>
   );
