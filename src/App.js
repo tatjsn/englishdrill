@@ -55,22 +55,51 @@ const controller = css`
   padding: 1rem;
 `;
 
+const display = css`
+  width: 100%;
+  height: 4rem;
+  border: solid black 1px;
+  background-color: rgba(0, 0, 0, 0.1);
+`;
+
+const button = css`
+  flex: 0 0;
+  width: 4rem;
+  height: 4rem;
+  border: solid black 1px;
+`;
+
 function App({ db, speak }) {
   const [score, setScore] = useState(0);
   const [items, setItems] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [result, setResult] = useState('none');
   const [answers, setAnswers] = useState([]);
+  const [input, setInput] = useState([]);
 
   useEffect(() => {
     const ref = db
       .collection('weeks')
-      .doc('hnfRsBB7ALdfyEgdj7wK');
+      .doc('1KuhPcYjjrUBnegP23EU');
     return ref.onSnapshot((doc) => {
       const data = doc.data();
       setItems(data.items);
     });
   }, []); // Do not rerun
+
+  function setupAnswer(updatedQuestions) {
+    const q = updatedQuestions[0];
+    const item = items[q];
+    // const nonQs = shuffle([...items.keys()].filter(x => x !== q)).slice(0,2);
+    // setAnswers(shuffle([q, ...nonQs]));
+    setAnswers(shuffle(item.word.split('')));
+  }
+
+  function setupGame() {
+    const updatedQuestions = shuffle([...items.keys()]);
+    setQuestions(updatedQuestions);
+    setupAnswer(updatedQuestions);
+  }
 
   if (items.length === 0) {
     return (
@@ -79,10 +108,6 @@ function App({ db, speak }) {
   }
 
   if (questions.length === 0) {
-    function setupGame() {
-      setQuestions(shuffle([...items.keys()]));
-    }
-
     return (
       <div className={main}>
         <div className={title}>
@@ -97,14 +122,6 @@ function App({ db, speak }) {
     );
   }
 
-  const q = questions[0];
-  const item = items[q];
-
-  if (answers.length === 0) {
-    const nonQs = shuffle([...items.keys()].filter(x => x !== q)).slice(0,2);
-    setAnswers(shuffle([q, ...nonQs]));
-  }
-
   function handleClick(selectedOption) {
     const isCorrect = selectedOption.word === item.word;
     setResult(isCorrect ? 'right': 'wrong');
@@ -113,23 +130,57 @@ function App({ db, speak }) {
       setResult('none');
       if (isCorrect) {
         setScore(score + 1);
+        const updatedQuestions = questions.slice(1);
+        setInput([]);
         setQuestions(questions.slice(1));
-        setAnswers([]); // Generate in next loop
+        setupAnswer(updatedQuestions);
       }
     }, 1000);
   };
+
+  function handleClickAlpha(alpha) {
+    setInput([...input, alpha]);
+  }
+
+  function handleClickBack() {
+    setInput(input.slice(0, -1));
+  }
+
+  function handleClickEnter() {
+    const isCorrect = input.join('') === item.word;
+    setResult(isCorrect ? 'right': 'wrong');
+    speak(item.word);
+    setTimeout(() => {
+      setResult('none');
+      if (isCorrect) {
+        setScore(score + 1);
+        const updatedQuestions = questions.slice(1);
+        setQuestions(questions.slice(1));
+        setupAnswer(updatedQuestions);
+      }
+    }, 1000);
+  }
+
+  const q = questions[0];
+  const item = items[q];
 
   return (
     <div className={main}>
       <div className={overlay}>score: {score}</div>
       <img className={bigImage} alt="question" src={item.image} onClick={() => speak(item.word)} />
-      <ul className={controller}>
-        {answers.map(a => items[a]).map(option => (
-          <li key={option.word} onClick={() => handleClick(option)}>
-            <button type="button">{option.word}</button>
-          </li>
+      <div className={controller}>
+        <div className={display}>
+          {input.join('')}
+        </div>
+        {answers.map(alpha => (
+          <button type="button" className={button} onClick={() => handleClickAlpha(alpha)}>{alpha}</button>
+          /* <li key={option.word} onClick={() => handleClick(option)}> */
+          /*   <button type="button" className={button}>{option.word}</button> */
+          /* </li> */
         ))}
-      </ul>
+        <button type="button" className={button} onClick={() => handleClickBack()}>&#128281;</button>
+        <button type="button" className={button} onClick={() => handleClickEnter()}>&#128077;</button>
+      </div>
       <div className={cx(fullScreen, { [hidden]: result !== 'right'})}>
         <div>Well done!</div>
       </div>
