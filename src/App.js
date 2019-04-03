@@ -154,6 +154,7 @@ function App({ db, speak }) {
       setResult('none');
       if (isCorrect) {
         setScore(score + 1);
+        setInput([]);
         const updatedQuestions = questions.slice(1);
         setQuestions(questions.slice(1));
         setupAnswer(updatedQuestions);
