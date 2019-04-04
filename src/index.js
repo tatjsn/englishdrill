@@ -14,7 +14,10 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
+let runningM = null;
+
 const speak = voiceId => msg => new Promise((resolve) => {
+  window.speechSynthesis.cancel();
   const m = new SpeechSynthesisUtterance();
   m.lang = 'en-GB';
   m.rate = 1.0;

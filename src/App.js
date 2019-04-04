@@ -10,6 +10,7 @@ const main = css`
   touch-action: manipulation;
   font-size: 3rem;
   padding: 1rem;
+  font-family: 'Zilla Slab', serif;
 `;
 
 const title = css`
@@ -45,6 +46,11 @@ const overlay = css`
   top: 0;
   left: 0;
   padding: 1rem;
+  display: flex;
+`;
+
+const overlaySpan = css`
+  flex: 1 1;
 `;
 
 const controller = css`
@@ -58,14 +64,20 @@ const controller = css`
 const display = css`
   width: 100%;
   height: 4rem;
+  line-height: 4rem;
+  padding: 0 1rem;
   border: solid black 1px;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
 `;
 
 const button = css`
   flex: 0 0;
+  padding: 0;
   width: 4rem;
   height: 4rem;
+  line-height: 4rem;
+  text-align: center;
   border: solid black 1px;
 `;
 
@@ -76,6 +88,7 @@ function App({ db, speak }) {
   const [result, setResult] = useState('none');
   const [answers, setAnswers] = useState([]);
   const [input, setInput] = useState([]);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     const ref = db
@@ -155,6 +168,7 @@ function App({ db, speak }) {
       if (isCorrect) {
         setScore(score + 1);
         setInput([]);
+        setShowHelp(false);
         const updatedQuestions = questions.slice(1);
         setQuestions(questions.slice(1));
         setupAnswer(updatedQuestions);
@@ -162,12 +176,20 @@ function App({ db, speak }) {
     }, 1000);
   }
 
+  function handleClickHelp() {
+    setScore(score - 1);
+    setShowHelp(true);
+  }
+
   const q = questions[0];
   const item = items[q];
 
   return (
     <div className={main}>
-      <div className={overlay}>score: {score}</div>
+      <div className={overlay}>
+        <div className={overlaySpan}>score: {score}</div>
+        { showHelp ? <div>[{item.word}]</div> : <button onClick={handleClickHelp}>Help</button> }
+      </div>
       <img className={bigImage} alt="question" src={item.image} onClick={() => speak(item.word)} />
       <div className={controller}>
         <div className={display}>
@@ -179,8 +201,8 @@ function App({ db, speak }) {
           /*   <button type="button" className={button}>{option.word}</button> */
           /* </li> */
         ))}
-        <button type="button" className={button} onClick={() => handleClickBack()}>&#128281;</button>
-        <button type="button" className={button} onClick={() => handleClickEnter()}>&#128077;</button>
+        <button type="button" className={button} onClick={handleClickBack}>&#128281;</button>
+        <button type="button" className={button} onClick={handleClickEnter}>&#128077;</button>
       </div>
       <div className={cx(fullScreen, { [hidden]: result !== 'right'})}>
         <div>Well done!</div>
