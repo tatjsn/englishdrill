@@ -93,7 +93,7 @@ function App({ db, speak }) {
   useEffect(() => {
     const ref = db
       .collection('weeks')
-      .doc('1KuhPcYjjrUBnegP23EU');
+      .doc('P9NsiUuJofOaDPRRxhK6');
     return ref.onSnapshot((doc) => {
       const data = doc.data();
       setItems(data.items);
