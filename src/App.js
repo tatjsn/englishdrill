@@ -4,6 +4,10 @@ import { css, cx } from 'emotion';
 
 const main = css`
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   max-width: 400px;
   min-height: 100vh;
   margin: auto;
@@ -19,7 +23,12 @@ const title = css`
 `;
 
 const bigImage = css`
+  margin: 2rem 0;
   width: 100%;
+`;
+
+const past = css`
+  filter: grayscale(100%) blur(5px);
 `;
 
 const fullScreen = css`
@@ -47,6 +56,10 @@ const overlay = css`
   left: 0;
   padding: 1rem;
   display: flex;
+  span, button {
+    background-color: black;
+    color: hotpink;
+  }
 `;
 
 const overlaySpan = css`
@@ -74,6 +87,7 @@ const display = css`
 const button = css`
   flex: 0 0;
   padding: 0;
+  border: 0;
   width: 4rem;
   height: 4rem;
   line-height: 4rem;
@@ -93,7 +107,7 @@ function App({ db, speak }) {
   useEffect(() => {
     const ref = db
       .collection('weeks')
-      .doc('P9NsiUuJofOaDPRRxhK6');
+      .doc('hlmczNxBeuBCoxnZiSNr');
     return ref.onSnapshot((doc) => {
       const data = doc.data();
       setItems(data.items);
@@ -186,11 +200,11 @@ function App({ db, speak }) {
 
   return (
     <div className={main}>
+      <img className={cx(bigImage, { [past]: item.attribute === 'past' })} alt="question" src={item.image} onClick={() => speak(item.word)} />
       <div className={overlay}>
-        <div className={overlaySpan}>score: {score}</div>
-        { showHelp ? <div>[{item.word}]</div> : <button onClick={handleClickHelp}>Help</button> }
+        <div className={overlaySpan}><span>score: {score}</span></div>
+        { showHelp ? <div><span>[{item.word}]</span></div> : <button onClick={handleClickHelp}>Help</button> }
       </div>
-      <img className={bigImage} alt="question" src={item.image} onClick={() => speak(item.word)} />
       <div className={controller}>
         <div className={display}>
           {input.join('')}
