@@ -1,10 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { render } from 'lit-html';
 
 firebase.initializeApp({
   apiKey: 'AIzaSyD9G7Mguzxb3hdzAtiEiWzM550DXknwcVU',
@@ -13,8 +11,6 @@ firebase.initializeApp({
 });
 
 const db = firebase.firestore();
-
-let runningM = null;
 
 const speak = voiceId => msg => new Promise((resolve) => {
   window.speechSynthesis.cancel();
@@ -26,9 +22,24 @@ const speak = voiceId => msg => new Promise((resolve) => {
   window.speechSynthesis.speak(m);
 });
 
-ReactDOM.render(<App db={db} speak={speak(0)}/>, document.getElementById('root'));
+const root = document.getElementById('root');
+let state = App.initialState;
+const dispatch = (key, value) => {
+  state = {...state, [key]: value};
+  update();
+};
+const setters = Object.keys(state).map(key => value => dispatch(key, value));
+const update = () => {
+  render(App(...Object.values(state), ...setters, speak), root);
+};
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+update();
+
+// after first rendering
+const ref = db
+  .collection('weeks')
+  .doc('hlmczNxBeuBCoxnZiSNr');
+ref.onSnapshot((doc) => {
+  const data = doc.data();
+  dispatch('items', data.items);
+});

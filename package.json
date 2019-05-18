@@ -5,6 +5,7 @@
   "dependencies": {
     "emotion": "^10.0.9",
     "firebase": "^5.9.1",
+    "lit-html": "^1.0.0",
     "lodash.shuffle": "^4.2.0",
     "react": "^16.8.5",
     "react-dom": "^16.8.5",

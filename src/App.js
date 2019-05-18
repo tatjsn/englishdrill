@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import shuffle from 'lodash.shuffle';
 import { css, cx } from 'emotion';
+import { html } from 'lit-html';
 
 const main = css`
   position: relative;
@@ -95,25 +95,12 @@ const button = css`
   border: solid black 1px;
 `;
 
-function App({ db, speak }) {
-  const [score, setScore] = useState(0);
-  const [items, setItems] = useState([]);
-  const [questions, setQuestions] = useState([]);
-  const [result, setResult] = useState('none');
-  const [answers, setAnswers] = useState([]);
-  const [input, setInput] = useState([]);
-  const [showHelp, setShowHelp] = useState(false);
-
-  useEffect(() => {
-    const ref = db
-      .collection('weeks')
-      .doc('hlmczNxBeuBCoxnZiSNr');
-    return ref.onSnapshot((doc) => {
-      const data = doc.data();
-      setItems(data.items);
-    });
-  }, []); // Do not rerun
-
+const initialState =
+  { score: 0, items: [], questions: [], result: 'none', answers: [], input: [], showHelp: false };
+function App(
+  score, items, questions, result, answers, input, showHelp,
+  setScore, setItems, setQuestions, setResult, setAnswers, setInput, setShowHelp,
+  speak) {
   function setupAnswer(updatedQuestions) {
     const q = updatedQuestions[0];
     const item = items[q];
@@ -130,22 +117,22 @@ function App({ db, speak }) {
 
   if (items.length === 0) {
     return (
-      <div className={main}>Now loading...</div>
+      html`<div class=${main}>Now loading...</div>`
     );
   }
 
   if (questions.length === 0) {
     return (
-      <div className={main}>
-        <div className={title}>
-          {score === 0 ? 'English drill!' : 'Good job!'}
+      html`<div class=${main}>
+        <div class=${title}>
+          ${score === 0 ? 'English drill!' : 'Good job!'}
         </div>
         <div>
-          <button type="button" onClick={setupGame}>
-            {score === 0 ? 'Start game' : 'Play again'}
+          <button type="button" @click=${setupGame}>
+            ${score === 0 ? 'Start game' : 'Play again'}
           </button>
         </div>
-      </div>
+      </div>`
     );
   }
 
@@ -198,34 +185,38 @@ function App({ db, speak }) {
   const q = questions[0];
   const item = items[q];
 
+  console.log(item, items, questions);
+
   return (
-    <div className={main}>
-      <img className={cx(bigImage, { [past]: item.attribute === 'past' })} alt="question" src={item.image} onClick={() => speak(item.word)} />
-      <div className={overlay}>
-        <div className={overlaySpan}><span>score: {score}</span></div>
-        { showHelp ? <div><span>[{item.word}]</span></div> : <button onClick={handleClickHelp}>Help</button> }
+    html`<div class=${main}>
+      <img class=${cx(bigImage, { [past]: item.attribute === 'past' })} alt="question" src=${item.image} @click=${() => speak(item.word)} />
+      <div class=${overlay}>
+        <div class=${overlaySpan}><span>score: ${score}</span></div>
+        ${ showHelp ? html`<div><span>[${item.word}]</span></div>` : html`<button @click=${handleClickHelp}>Help</button>` }
       </div>
-      <div className={controller}>
-        <div className={display}>
-          {input.join('')}
+      <div class=${controller}>
+        <div class=${display}>
+          ${input.join('')}
         </div>
-        {answers.map(alpha => (
-          <button type="button" className={button} onClick={() => handleClickAlpha(alpha)}>{alpha}</button>
+        ${answers.map(alpha => (
+          html`<button type="button" class=${button} @click=${() => handleClickAlpha(alpha)}>${alpha}</button>`
           /* <li key={option.word} onClick={() => handleClick(option)}> */
-          /*   <button type="button" className={button}>{option.word}</button> */
+          /*   <button type="button" class=${button}>{option.word}</button> */
           /* </li> */
         ))}
-        <button type="button" className={button} onClick={handleClickBack}>&#128281;</button>
-        <button type="button" className={button} onClick={handleClickEnter}>&#128077;</button>
+        <button type="button" class=${button} @click=${handleClickBack}>&#128281;</button>
+        <button type="button" class=${button} @click=${handleClickEnter}>&#128077;</button>
       </div>
-      <div className={cx(fullScreen, { [hidden]: result !== 'right'})}>
+      <div class=${cx(fullScreen, { [hidden]: result !== 'right'})}>
         <div>Well done!</div>
       </div>
-      <div className={cx(fullScreen, { [hidden]: result !== 'wrong'})}>
+      <div class=${cx(fullScreen, { [hidden]: result !== 'wrong'})}>
         <div>Try again...</div>
       </div>
-    </div>
+    </div>`
   );
 }
+
+App.initialState = initialState;
 
 export default App;
