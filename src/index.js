@@ -2,7 +2,7 @@ import './index.css';
 import App from './App';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { render } from 'lit-html';
+import render from './render';
 
 firebase.initializeApp({
   apiKey: 'AIzaSyD9G7Mguzxb3hdzAtiEiWzM550DXknwcVU',
@@ -10,36 +10,17 @@ firebase.initializeApp({
   projectId: 'englishdrill-43d5a'
 });
 
-const db = firebase.firestore();
+const docRef = firebase.firestore()
+  .collection('weeks')
+  .doc('hlmczNxBeuBCoxnZiSNr');
 
-const speak = voiceId => msg => new Promise((resolve) => {
+function speak (msg) {
   window.speechSynthesis.cancel();
   const m = new SpeechSynthesisUtterance();
   m.lang = 'en-GB';
   m.rate = 1.0;
   m.text = msg;
-  m.onend = resolve;
   window.speechSynthesis.speak(m);
-});
+}
 
-const root = document.getElementById('root');
-let state = App.initialState;
-const dispatch = (key, value) => {
-  state = {...state, [key]: value};
-  update();
-};
-const setters = Object.keys(state).map(key => value => dispatch(key, value));
-const update = () => {
-  render(App(...Object.values(state), ...setters, speak), root);
-};
-
-update();
-
-// after first rendering
-const ref = db
-  .collection('weeks')
-  .doc('hlmczNxBeuBCoxnZiSNr');
-ref.onSnapshot((doc) => {
-  const data = doc.data();
-  dispatch('items', data.items);
-});
+const dispatch = render(App, document.getElementById('root'), docRef, speak);

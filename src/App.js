@@ -97,10 +97,11 @@ const button = css`
 
 const initialState =
   { score: 0, items: [], questions: [], result: 'none', answers: [], input: [], showHelp: false };
-function App(
+function App (
   score, items, questions, result, answers, input, showHelp,
   setScore, setItems, setQuestions, setResult, setAnswers, setInput, setShowHelp,
-  speak) {
+  docRef, speak,
+) {
   function setupAnswer(updatedQuestions) {
     const q = updatedQuestions[0];
     const item = items[q];
@@ -185,8 +186,6 @@ function App(
   const q = questions[0];
   const item = items[q];
 
-  console.log(item, items, questions);
-
   return (
     html`<div class=${main}>
       <img class=${cx(bigImage, { [past]: item.attribute === 'past' })} alt="question" src=${item.image} @click=${() => speak(item.word)} />
@@ -216,6 +215,17 @@ function App(
     </div>`
   );
 }
+
+App.onInitialRender = function (
+  score, items, questions, result, answers, input, showHelp,
+  setScore, setItems, setQuestions, setResult, setAnswers, setInput, setShowHelp,
+  docRef, speak,
+) {
+  docRef.onSnapshot((doc) => {
+    const data = doc.data();
+    setItems(data.items);
+  });
+};
 
 App.initialState = initialState;
 
