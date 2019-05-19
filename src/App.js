@@ -107,9 +107,7 @@ function App (
   const [input, setInput] = useState([]);
   const [showHelp, setShowHelp] = useState(false);
   useEffect(() => {
-    console.log('effect called');
     docRef.onSnapshot((doc) => {
-      console.log('got data');
       const data = doc.data();
       setItems(data.items);
     });
