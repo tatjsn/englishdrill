@@ -95,13 +95,25 @@ const button = css`
   border: solid black 1px;
 `;
 
-const initialState =
-  [/* score */ 0, /* items */ [], /* questions */ [], /* result */ 'none', /* answers */ [], /* input */ [], /*showHelp*/ false];
 function App (
-  score, items, questions, result, answers, input, showHelp,
-  setScore, setItems, setQuestions, setResult, setAnswers, setInput, setShowHelp,
+  useState, useEffect,
   docRef, speak,
 ) {
+  const [score, setScore] = useState(0);
+  const [items, setItems] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [result, setResult] = useState('none');
+  const [answers, setAnswers] = useState([]);
+  const [input, setInput] = useState([]);
+  const [showHelp, setShowHelp] = useState(false);
+  useEffect(() => {
+    console.log('effect called');
+    docRef.onSnapshot((doc) => {
+      console.log('got data');
+      const data = doc.data();
+      setItems(data.items);
+    });
+  }, []);
   function setupAnswer(updatedQuestions) {
     const q = updatedQuestions[0];
     const item = items[q];
@@ -215,18 +227,5 @@ function App (
     </div>`
   );
 }
-
-App.onInitialRender = function (
-  score, items, questions, result, answers, input, showHelp,
-  setScore, setItems, setQuestions, setResult, setAnswers, setInput, setShowHelp,
-  docRef, speak,
-) {
-  docRef.onSnapshot((doc) => {
-    const data = doc.data();
-    setItems(data.items);
-  });
-};
-
-App.initialState = initialState;
 
 export default App;
