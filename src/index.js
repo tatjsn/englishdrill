@@ -23,4 +23,4 @@ function speak (msg) {
   window.speechSynthesis.speak(m);
 }
 
-const dispatch = render(App, document.getElementById('root'), docRef, speak);
+render(App, document.getElementById('root'), docRef, speak);

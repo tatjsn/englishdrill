@@ -96,7 +96,7 @@ const button = css`
 `;
 
 const initialState =
-  { score: 0, items: [], questions: [], result: 'none', answers: [], input: [], showHelp: false };
+  [/* score */ 0, /* items */ [], /* questions */ [], /* result */ 'none', /* answers */ [], /* input */ [], /*showHelp*/ false];
 function App (
   score, items, questions, result, answers, input, showHelp,
   setScore, setItems, setQuestions, setResult, setAnswers, setInput, setShowHelp,
