@@ -1,7 +1,5 @@
 import { render } from 'lit-html';
 
-// Nested stateful component is not supported
-// The easiest solution would be hard boundary using custom element
 export default function(Comp, root, ...props) {
   const states = [];
   const dispatch = (key, value) => {

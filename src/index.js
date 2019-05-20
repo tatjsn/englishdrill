@@ -24,3 +24,5 @@ function speak (msg) {
 }
 
 render(App, document.getElementById('root'), docRef, speak);
+
+document.getElementById('loading').setAttribute('style', 'display: none');
